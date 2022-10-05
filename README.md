@@ -1,3 +1,1 @@
-My First Readme
-
-# alx-system_engineering-devops
+My first readme
