@@ -1,2 +1,1 @@
-#!/bin/bash
-Alx Redirection
+My first readme
