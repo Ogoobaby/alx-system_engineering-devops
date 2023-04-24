@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Use a private key to login to my server by ssh
 
-ssh -i ~/.ssh/school ubuntu@54.173.33.44
+ssh -i /root/.ssh/school ubuntu@54.173.33.44
