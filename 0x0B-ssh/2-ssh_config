@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-SendEnv LANG LC_*
-    HashKnownHosts yes
-    GSSAPIAuthentication yes
-    PasswordAuthentication no
-    IdentityFile ~/.ssh/school
-=======
 # ssh config file
 Host *
       PasswordAuthentication no
-      IdentifyFile /root/.ssh/school
->>>>>>> d063353f1d756be2164db601abac7b1017d4bbe8
+      IdentifyFile ~/.ssh/school
