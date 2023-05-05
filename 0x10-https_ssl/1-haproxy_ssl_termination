@@ -24,4 +24,4 @@ frontend https
 
 backend servers
     mode http
-    server server1 127.0.0.1:80 check
+    server server1 18.207.2.139 check
