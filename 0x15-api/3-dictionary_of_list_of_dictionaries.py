@@ -1,18 +1,25 @@
 #!/usr/bin/python3
-"""Exports to-do list information of all employees to JSON format."""
+"""Gather data from an API and export to list of dictionaries"""
+
 import json
 import requests
+from sys import argv
+
+
+def main():
+    """Gather data from an API and export to list of dictionaries"""
+    users = requests.get("https://jsonplaceholder.typicode.com/users").json()
+    todo = requests.get("https://jsonplaceholder.typicode.com/todos").json()
+    data = {}
+    for user in users:
+        data[user.get('id')] = [{
+            "username": user.get('username'),
+            "task": task.get('title'),
+            "completed": task.get('completed')
+        } for task in todo if task.get('userId') == user.get('id')]
+    with open("todo_all_employees.json", "w") as jsonfile:
+        json.dump(data, jsonfile)
+
 
 if __name__ == "__main__":
-    url = "https://jsonplaceholder.typicode.com/"
-    users = requests.get(url + "users").json()
-
-    with open("todo_all_employees.json", "w") as jsonfile:
-        json.dump({
-            u.get("id"): [{
-                "task": t.get("title"),
-                "completed": t.get("completed"),
-                "username": u.get("username")
-            } for t in requests.get(url + "todos",
-                                    params={"userId": u.get("id")}).json()]
-            for u in users}, jsonfile)
+    main()

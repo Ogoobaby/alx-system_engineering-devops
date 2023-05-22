@@ -1,25 +1,25 @@
 #!/usr/bin/python3
-"""gets api"""
+"""Gather data from an API """
 import requests
 from sys import argv
 
 
-def todo(userid):
-    """doc stringed"""
-    name = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}'.format(
-            userid)).json().get('name')
-    tasks = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
-            userid)).json()
-    tasksDone = ['\t {}\n'.format(dic.get('title')) for dic in tasks
-                 if dic.get('completed')]
-    if name and tasks:
-        print("Employee {} is done with tasks({}/{}):".format
-              (name, len(tasksDone), len(tasks)))
-        print(''.join(tasksDone), end='')
+def main():
+    """Gather data from an API"""
+    user_id = argv[1]
+    user = requests.get("https://jsonplaceholder.typicode.com/users/{}"
+                        .format(user_id)).json()
+    todo = requests.get("https://jsonplaceholder.typicode.com/todos?userId={}"
+                        .format(user_id)).json()
+    completed = []
+    for task in todo:
+        if task.get('completed') is True:
+            completed.append(task)
+    print("Employee {} is done with tasks({}/{}):"
+          .format(user.get('name'), len(completed), len(todo)))
+    for task in completed:
+        print("\t {}".format(task.get('title')))
 
 
 if __name__ == "__main__":
-    if len(argv) == 2:
-        todo(int(argv[1]))
+    main()
