@@ -1,66 +1,42 @@
-<<<<<<< HEAD
-# Postmortem
-=======
+##Postmortem: BooktifuL Requests Failure Incident
 
-BooktifuL requests failure report
->>>>>>> 2b4a4f9991a60d851ebd4675b03dc73aa845f945
+#Issue Summary:
+Duration: June 10, 2023, 06:00 - June 10, 2023, 19:20 (WAT)
+Impact: Outage on an isolated Ubuntu 14.04 container running an Apache web server
+Root Cause: Typo in the file name within the WordPress application, leading to a critical error and server unavailability
 
-Upon the release of ALX's System Engineering & DevOps project 0x19, approximately 06:00 West African Time (WAT) here in Nigeria, an outage occurred on an isolated Ubuntu 14.04 container running an Apache web server. GET requests on the server led to 500 Internal Server Error's, when the expected response was an HTML file defining a simple Holberton WordPress site.
+##Timeline:
 
-## Debugging Process
+    Issue Detected: June 15, 2023, 12:00 (WAT)
+    Detection Method: Gloria, the assigned bug debugger, noticed the issue upon opening the System Engineering & DevOps project.
+    Actions Taken:
+        Checked running processes using ps aux and confirmed the Apache web server processes were active.
+        Explored the sites-available folder in the /etc/apache2/ directory and identified the serving location of the web server as /var/www/html/.
+        Ran strace on the root and www-data Apache processes to trace system calls.
+        Discovered an -1 ENOENT (No such file or directory) error related to the file /var/www/html/wp-includes/class-wp-locale.phpp when analyzing the www-data process with strace.
+        Located the erroneous .phpp file extension in the wp-settings.php file, specifically on line 137, which attempted to include the file class-wp-locale.phpp.
+        Rectified the typo by removing the trailing p from the file name.
+        Conducted a successful test using curl to verify the server's functionality.
+        Created a Puppet manifest, 0-strace_is_your_friend.pp, to automate the error fix in case of similar incidents.
 
-Bug debugger Bamidele (Lexxyla... as in my actual initials... made that up on the spot, pretty
-good, huh?) encountered the issue upon opening the project and being, well, instructed to
-address it, roughly 19:20 PST. He promptly proceeded to undergo solving the problem.
+##Root Cause and Resolution:
+The root cause of the outage was identified as a typographical error within the WordPress application. Specifically, in the wp-settings.php file, the inclusion of the file class-wp-locale.phpp resulted in a critical error. The correct file name, located in the wp-content directory, should have been class-wp-locale.php.
 
-1. Checked running processes using `ps aux`. Two `apache2` processes - `root` and `www-data` -
-were properly running.
+To resolve the issue, the typo was corrected by removing the trailing p from the file name. This simple fix restored the functionality of the server, and subsequent tests confirmed its proper operation. Additionally, a Puppet manifest, 0-strace_is_your_friend.pp(https://github.com/Ogoobaby/alx-system_engineering-devops/blob/master/0x17-web_stack_debugging_3/0-strace_is_your_friend.pp), was created to automate the correction process in case of future occurrences of this error.
 
-2. Looked in the `sites-available` folder of the `/etc/apache2/` directory. Determined that
-the web server was serving content located in `/var/www/html/`.
+##Corrective and Preventative Measures:
+To prevent similar outages in the future, the following measures are recommended:
 
-3. In one terminal, ran `strace` on the PID of the `root` Apache process. In another, curled
-the server. Expected great things... only to be disappointed. `strace` gave no useful
-information.
+*    Thoroughly test applications before deployment to catch potential errors, such as typos or critical bugs, at an early stage.
+*    Implement status monitoring services, like UptimeRobot, to promptly alert system administrators about any website outages or performance issues.
+*    Regularly review and validate the codebase to ensure there are no such critical errors that can disrupt the application's functionality.
 
-4. Repeated step 3, except on the PID of the `www-data` process. Kept expectations lower this
-time... but was rewarded! `strace` revelead an `-1 ENOENT (No such file or directory)` error
-occurring upon an attempt to access the file `/var/www/html/wp-includes/class-wp-locale.phpp`.
+##Tasks to Address the Issue:
 
-5. Looked through files in the `/var/www/html/` directory one-by-one, using Vim pattern
-matching to try and locate the erroneous `.phpp` file extension. Located it in the
-`wp-settings.php` file. (Line 137, `require_once( ABSPATH . WPINC . '/class-wp-locale.php' );`).
+*    Review and update the testing process to include rigorous checks for typographical errors or critical bugs.
+*    Implement a status monitoring service to promptly detect and report any future outages or performance degradation.
+*    Conduct regular code reviews and validations to identify and address potential critical errors or inconsistencies in the application.
+*    Maintain an updated and comprehensive documentation repository to assist developers and debugging teams in addressing similar issues efficiently.
 
-6. Removed the trailing `p` from the line.
-
-7. Tested another `curl` on the server. 200 A-ok!
-
-8. Wrote a Puppet manifest to automate fixing of the error.
-
-## Summation
-
-In short, a typo. Gotta love'em. In full, the WordPress app was encountering a critical
-error in `wp-settings.php` when tyring to load the file `class-wp-locale.phpp`. The correct
-file name, located in the `wp-content` directory of the application folder, was
-`class-wp-locale.php`.
-
-Patch involved a simple fix on the typo, removing the trailing `p`.
-
-## Prevention
-
-This outage was not a web server error, but an application error. To prevent such outages
-moving forward, please keep the following in mind.
-
-* Test! Test test test. Test the application before deploying. This error would have arisen
-and could have been addressed earlier had the app been tested.
-
-* Status monitoring. Enable some uptime-monitoring service such as
-[UptimeRobot](./https://uptimerobot.com/) to alert instantly upon outage of the website.
-
-Note that in response to this error, I wrote a Puppet manifest
-[0-strace_is_your_friend.pp](https://github.com/Toluope05/alx-system_engineering-devops/blob/main/0x17-web_stack_debugging_3/0-strace_is_your_friend.pp)
-to automate fixing of any such identitical errors should they occur in the future. The manifest
-replaces any `phpp` extensions in the file `/var/www/html/wp-settings.php` with `php`.
-
-But of course, it will never occur again, because we're programmers, and we never make
-errors! :wink:
+##Conclusion:
+The BooktifuL Requests Failure Incident was caused by a typographical error within the WordPress application. The incorrect file name, class-wp-locale.phpp, led to a critical error and subsequent server unavailability. By identifying and rectifying the typo, the system.
